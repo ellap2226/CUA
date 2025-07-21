@@ -1,0 +1,19 @@
+<SAFheader>
+</SAFheader>
+
+<SampleGlobalInfo>
+# xsection     xsection_error nevents        sum_weight+    sum_weight-    
+1.320300e+10   1.701700e+07   10000          0.000000e+00   0.000000e+00   
+</SampleGlobalInfo>
+
+<FileInfo>
+"/Users/elllllla/madanalysis5/ExpertModeTest_backup/Input/unweighted_events.lhe" # file 1 / 1
+</FileInfo>
+
+<SampleDetailedInfo>
+# xsection     xsection_error nevents        sum_weight+    sum_weight-    
+1.320300e+10   1.701700e+07   10000          0.000000e+00   0.000000e+00    # file 1 / 1
+</SampleDetailedInfo>
+
+<SAFfooter>
+</SAFfooter>
