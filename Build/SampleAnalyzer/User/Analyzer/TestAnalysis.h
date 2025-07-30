@@ -25,7 +25,10 @@ namespace MA5
     TH1F* minAngularDist;
     TH1F* cosThetaY;
     TH1F* cosThetaH;
-
+    TH1F* cosThetaPho1;
+    TH1F* cosThetaPho2;
+    TH1F* cosThetaB;
+    TH1F* cosThetaAB;
     /*
     ptaamtotal->Draw();
     ptbbmtotal->Draw();
@@ -34,6 +37,12 @@ namespace MA5
     ptbmbbl->Draw();
     ptbmbbsl->Draw();
     minAngularDist->Draw();
+    cosThetaY->Draw();
+    cosThetaH->Draw();
+    cosThetaPho1->Draw();
+    cosThetaPho2->Draw();
+    cosThetaB->Draw();
+    cosThetaAB->Draw();
     */
     
   };

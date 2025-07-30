@@ -24,8 +24,12 @@ bool TestAnalysis::Initialize(const MA5::Configuration& cfg, const std::map<std:
   ptbmbbl = new TH1F("ptbmbbl","p_{T}^{b}/m_{bb} leading",100,0.,2.);
   ptbmbbsl = new TH1F("ptbmbbsl","p_{T}^{b}/m_{bb} subleading",100,0.,2.);
   minAngularDist = new TH1F("minAngularDist","Minimum Angular Distance (photon&quark)",100,0.,3.);
-  cosThetaY = new TH1F("cosThetaY","costheta^{*} Y",100,0.,3.5);
-  cosThetaH = new TH1F("cosThetaH","costheta^{*} H",100,0.,3.5);
+  cosThetaY = new TH1F("cosThetaY","costheta^{*} Y",100,-1.,1.);
+  cosThetaH = new TH1F("cosThetaH","costheta^{*} H",100,-1.,1.);
+  cosThetaPho1 = new TH1F("cosThetaPho1","costheta^{*} Pho1",100,-1.,1.);
+  cosThetaPho2 = new TH1F("cosThetaPho2","costheta^{*} Pho2",100,-1.,1.);
+  cosThetaB = new TH1F("cosThetaB","costheta^{*} B",100,-1.,1.);
+  cosThetaAB = new TH1F("cosThetaAB","costheta^{*} Ab",100,-1.,1.);
   return true;
 }
 
@@ -46,6 +50,10 @@ void TestAnalysis::Finalize(const SampleFormat& summary, const std::vector<Sampl
   minAngularDist->Write();
   cosThetaY->Write();
   cosThetaH->Write();
+  cosThetaPho1->Write();
+  cosThetaPho2->Write();
+  cosThetaB->Write();
+  cosThetaAB->Write();
   outFile->Close();
   // saving histos
   cout << "END   Finalization" << endl;
@@ -313,52 +321,97 @@ bool TestAnalysis::Execute(SampleFormat& sample, const EventFormat& event)
       */
 
     minAngularDist->Fill(minDist);
-///*
-    cout << "----------------Cos Theta------------------" << endl;
 
-    TVector3 boostToRest = -x.BoostVector();
+    cout << "----------------Cos Theta X and H------------------" << endl;
+
+    TVector3 boostToRestX = -x.BoostVector();
 
     // Copy of original y and h
     TLorentzVector yInRest = y;
     TLorentzVector hInRest = h;
 
     // Boost both Y and H to rest
-    yInRest.Boost(boostToRest);
-    hInRest.Boost(boostToRest);
+    yInRest.Boost(boostToRestX);
+    hInRest.Boost(boostToRestX);
 
     // Get direction of Y and H (in Rest) and X
     TVector3 yDirection = yInRest.Vect();
     TVector3 hDirection = hInRest.Vect();
     TVector3 xDirection = x.Vect();
 
-    double costhetaY = yDirection.Angle(xDirection);
-    double costhetaH = hDirection.Angle(xDirection);
+    double costhetaY = TMath::Cos(yDirection.Angle(xDirection));
+    double costhetaH = TMath::Cos(hDirection.Angle(xDirection));
 
     cout << "cos theta Y and X " << costhetaY << endl;
     cout << "cos theta H and X " << costhetaH << endl;
 
-    /*
-    cout << "y and h in x rest frame" << endl;
-    cout << endl;
-
-    cout << "y in rest = " << endl;
-    yInRest.Print();
-    cout << endl;
-    cout << "y original = " << endl;
-    y.Print();
-    cout << endl;
-    cout << "h in rest = " << endl;
-    hInRest.Print();
-    cout << endl;
-    cout << "h original = " << endl;
-    h.Print();
-    cout << endl;
-    */
-
     cosThetaY->Fill(costhetaY);
+    cosThetaY->SetMinimum(0); 
     cosThetaH->Fill(costhetaH);
+    cosThetaH->SetMinimum(0); 
 
-//*/
+    cout << endl;
+    cout << endl;
+
+    cout << "----------------Cos Theta Photons from H------------------" << endl;
+
+    TVector3 boostToRestH = -h.BoostVector();
+
+    // Copy of original photons
+    TLorentzVector pho1InRest = pho1;
+    TLorentzVector pho2InRest = pho2;
+
+    // Boost both photons to rest
+    pho1InRest.Boost(boostToRestH);
+    pho2InRest.Boost(boostToRestH);
+
+    // Get direction of photons (in Rest) and higgs
+    TVector3 pho1Direction = pho1InRest.Vect();
+    TVector3 pho2Direction = pho2InRest.Vect();
+    TVector3 higgsDirection = h.Vect();
+
+    double costhetapho1 = TMath::Cos(pho1Direction.Angle(higgsDirection));
+    double costhetapho2 = TMath::Cos(pho2Direction.Angle(higgsDirection));
+
+    cout << "cos theta pho1 and higgs " << costhetapho1 << endl;
+    cout << "cos theta pho2 and higgs " << costhetapho2 << endl;
+
+    cosThetaPho1->Fill(costhetapho1);
+    cosThetaPho1->SetMinimum(0); 
+    cosThetaPho2->Fill(costhetapho2);
+    cosThetaPho2->SetMinimum(0); 
+
+    cout << endl;
+    cout << endl;
+
+    cout << "----------------Cos Theta B Quarks from Y------------------" << endl;
+
+    TVector3 boostToRestY = -y.BoostVector();
+
+    // Copy of original photons
+    TLorentzVector bInRest = b;
+    TLorentzVector abInRest = ab;
+
+    // Boost both b quarks to rest frame of Y
+    bInRest.Boost(boostToRestY);
+    abInRest.Boost(boostToRestY);
+
+    // Get direction of  and H (in Rest) and X
+    TVector3 bDirection = bInRest.Vect();
+    TVector3 abDirection = abInRest.Vect();
+    TVector3 yOriginalDirection = y.Vect();
+
+    double costhetab = TMath::Cos(bDirection.Angle(yOriginalDirection));
+    double costhetaab = TMath::Cos(abDirection.Angle(yOriginalDirection));
+
+    cout << "cos theta b and y " << costhetab << endl;
+    cout << "cos theta ab and y " << costhetaab << endl;
+
+    cosThetaB->Fill(costhetab);
+    cosThetaB->SetMinimum(0); 
+    cosThetaAB->Fill(costhetaab);
+    cosThetaAB->SetMinimum(0); 
+
     cout << endl;
     cout << endl;
 
